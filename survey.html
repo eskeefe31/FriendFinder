@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <script src="https://code.jquery.com/jquery.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+    <!-- <script type="text/javascript" src="./survey.js"></script> -->
+    <script src="https://unpkg.com/jquery"></script>
+    <script src="https://surveyjs.azureedge.net/1.0.14/survey.jquery.js"></script>
+    <link href="https://surveyjs.azureedge.net/1.0.14/survey.css" type="text/css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://unpkg.com/bootstrap@3.3.7/dist/css/bootstrap.min.css">
+
+    <title>Friend Finder</title>
+</head>
+<body>
+   
+  <div class="container">
+    <div class="jumbotron">
+      <h1>Welcome to Friend Finder</h1>
+      <h3>Are you ready to meet your New Best Friend? </h3>
+    </div>
+    </div>
+    <div class="row"></div>
+            <div id="surveyElement"></div>
+
+            <div id="result"></div>
+
+ </html>     
+           
+           
+            <script>
+
+                
+
+
+ Survey.defaultBootstrapCss.navigationButton = "btn btn-green";
+Survey.defaultBootstrapCss.rating.item = "btn btn-default my-rating";
+Survey.Survey.cssType = "bootstrap";
+
+
+            var json = { title: "Friend Finder Questionnaire", showProgressBar: "top", pages: [
+    {questions: [
+        {
+            name: "name",
+            type: "text",
+            title: "Please enter your name:",
+            placeHolder: "Jon Snow",
+            isRequired: true
+        },
+        {
+            type: "file",
+            title: "Please upload your photo",
+            name: "image",
+            storeDataAsText: true,
+            showPreview: true,
+            imageWidth: 150,
+            maxSize: 10240000
+        },
+        { type: "matrix", name: "Quality", title: "Please indicate if you agree or disagree with the following statements",
+            columns: [{ value: 1, text: "Strongly Disagree" },
+                { value: 2, text: "Disagree"},
+                { value: 3, text: "Neutral"}, 
+                { value: 4, text: "Agree" },
+                { value: 5, text: "Strongly Agree" }],
+            rows: [{ value: "honest", text: "If someone has wrong me, I will be open and honest about it." },
+                {  value: "initiate", text: "You do not usually initiate conversations." },
+                {value: "curiousity", text: "You rarely do something just out of sheer curiosity." },
+                {value: "debate", text: "Winning a debate matters less to you than making sure no one gets upset."},
+                { value: "debate", text: "You do not mind being at the center of attention." },
+                { value: "feelings", text: "It is often difficult for you to relate to other people’s feelings." },
+                { value: "practical", text: "You consider yourself more practical than creative." },
+                { value: "actions", text: "You do not let other people influence your actions." },
+                {value: "kindness", text: "As a parent, you would rather see your child grow up kind than smart." },
+                {value: "social", text: "You enjoy going to social events that involve dress-up or role-play activities."}],
+        },
+    ]},
+]};
+
+window.survey = new Survey.Model(json);
+
+survey.onComplete.add(function(result) {
+    document.querySelector('#surveyResult').innerHTML = "result: " + JSON.stringify(result.data);
+});
+
+
+$("#surveyElement").Survey({ 
+    model: survey 
+});
+
+
+ var friends = [];
+
+$.get("/api/", function(data) {
+    console.log(data);
+    if (data) {
+
+        if( data.length <= 5 ) {
+            for (var i = 0; i < data.length; i++) {
+                var fName = $("<td>").text(data[i].name);
+                var fImage = $("<td>").text(data[i].image);
+                var fQuality  = $("<td>").text(data[i].quality);
+                var friendRow = $("<tr>").append(resName)
+                    .append(fName)
+                    .append(fImage)
+                    .append(fQuality);
+            $("#surveyElement").append(friendRow);
+            
+            };
+        };
+
+    };
+
+});
+
+   
+
+
+</script>
